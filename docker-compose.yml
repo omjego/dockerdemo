@@ -1,8 +1,16 @@
+#version of docker-compose
 version: '3'
+#Specify all the services you want to create
 services:
+  #service name
   redis-server:
+    # use the image to create this service
     image: redis
+    restart: always
   spring-app:
-    build: .
+    image: omjego/dockerdemo:latest
+    #first build an image using dockerfile present inside this folder(.) and then use that image
+#    build: .
+    restart: always
     ports:
-      - "9090:8080"
+      - "8080:8080"

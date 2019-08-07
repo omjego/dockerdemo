@@ -1,23 +1,18 @@
-#Multi stage docker build.
-#Stage 1: First run maven build and create package
-#Stage 2: Copy only target folder in to new image
 
-#FROM maven as build
-#WORKDIR /usr/src/app
+#Stage 1, Build artifact
+FROM maven:3.6.1-jdk-8  as build
+WORKDIR /usr/myapp
 
-#ADD pom.xml /usr/src/app
-#RUN mvn verify --fail-never
-#ADD . /usr/src/app
-#RUN mvn clean package -DskipTests
+COPY pom.xml /usr/myapp
+COPY settings.xml /usr/myapp
+RUN mvn -s settings.xml dependency:go-offline -B
 
-#
-#FROM openjdk:8-jre-alpine
-#MAINTAINER omkar.j@media.net
-#RUN echo 'Building project'
-#
-# CMD ["java", "-jar", "/usr/app.jar"]
+COPY src /usr/myapp/src
+RUN mvn -s settings.xml package
 
 
-FROM alpine
-RUN apk add --update redis
-CMD ["redis-server"]
+#Stage 2, copy artifact
+FROM openjdk:8-jre-alpine
+COPY --from=build /usr/myapp/target/docker-demo-0.0.1-SNAPSHOT.jar /usr/myapp/app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/usr/myapp/app.jar"]

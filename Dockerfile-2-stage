@@ -1,0 +1,14 @@
+#Phase 1, Build artifact
+FROM maven as build
+WORKDIR /usr/src/app
+
+COPY src /usr/src/app/src
+COPY src /usr/src/app
+
+#Stage 2, copy artifact
+RUN mvn clean package
+FROM openjdk:9
+COPY --from=build /usr/src/app/target/docker-demo-0.0.1-SNAPSHOT.jar /usr/app/app.jar
+EXPOSE 8080
+RUN echo "Running application"
+ENTRYPOINT["java", "-jar", "/usr/app/app.jar"]

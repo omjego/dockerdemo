@@ -19,4 +19,10 @@ public class RedisController
         String key = "count";
         return "Visits : " + redisTemplate.opsForValue().increment(key, 1);
     }
+
+    @GetMapping("/hello")
+    @ResponseBody
+    public String defaultMethod() {
+        return  "Hi there";
+    }
 }
