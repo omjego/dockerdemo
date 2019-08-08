@@ -1,11 +1,11 @@
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
 	<mirrors>
 		<mirror>
 			<id>nexus</id>
 			<mirrorOf>*</mirrorOf>
-			<url>
-				http://repository.media.net/nexus/content/groups/public
-			</url>
+			<url>http://repository.media.net/nexus/content/groups/public</url>
 		</mirror>
 	</mirrors>
 	<profiles>
@@ -13,17 +13,18 @@
 			<id>nexus</id>
 			<repositories>
 				<repository>
-					<id>mavenCentral</id>
-					<url>https://repo.maven.apache.org/maven2</url>
+					<id>central</id>
+					<url>http://repository.media.net/nexus/content/repositories/central</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
 				</repository>
 				<repository>
-					<id>central</id>
-					<url>
-						http://repository.media.net/nexus/content/repositories/central
-					</url>
+					<id>third party</id>
+					<url>http://repository.media.net/nexus/content/repositories/thirdparty</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
@@ -46,29 +47,8 @@
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
-					<id>mavenCentral</id>
-					<url>https://repo.maven.apache.org/maven2</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-				</pluginRepository>
-				<pluginRepository>
 					<id>central</id>
-					<url>
-						http://repository.media.net/nexus/content/repositories/central
-					</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-				<pluginRepository>
-					<id>medianet</id>
-					<url>
-						http://repository.media.net/nexus/content/repositories/medianet
-					</url>
+					<url>http://repository.media.net/nexus/content/repositories/central</url>
 					<releases>
 						<enabled>true</enabled>
 					</releases>
@@ -79,6 +59,9 @@
 			</pluginRepositories>
 		</profile>
 	</profiles>
+	<activeProfiles>
+		<activeProfile>nexus</activeProfile>
+	</activeProfiles>
 	<servers>
 		<server>
 			<id>medianet</id>
@@ -86,7 +69,4 @@
 			<password>oo_d10FOA__FHOQmZ_</password>
 		</server>
 	</servers>
-	<activeProfiles>
-		<activeProfile>nexus</activeProfile>
-	</activeProfiles>
 </settings>

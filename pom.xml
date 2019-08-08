@@ -7,14 +7,15 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.4.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    
+
     <groupId>com.omjego</groupId>
     <artifactId>docker-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>DockerDemo</name>
     <description>Demo project for Spring Boot</description>
+
 
     <properties>
         <java.version>1.8</java.version>
@@ -28,6 +29,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
         </dependency>
     </dependencies>
     <build>
