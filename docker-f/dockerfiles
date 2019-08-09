@@ -1,0 +1,166 @@
+
+Redis Example Dockerfile
+
+FROM alpine
+RUN apk add --update redis
+RUN apk add gcc
+CMD ["redis-server"]
+
+
+RUN apk add gcc
+
+========Single Stage=====================
+
+
+#First run mvn package on your machine and then run this docker file
+
+FROM openjdk:8-jre-alpine
+WORKDIR /usr/myapp
+COPY ./target/docker-demo-0.0.1-SNAPSHOT.jar /usr/myapp/app.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","/usr/myapp/app.jar"]
+
+
+(Different build environments )
+
+===========Single Stage (With Build within docker environment)=============
+
+# select image
+FROM maven:3.5-jdk-8
+
+# copy your source tree
+COPY ./ /usr/myapp
+
+# build for release
+RUN mvn package
+
+# set the startup command to run your binary
+ENTRYPOINT ["java","-jar","/usr/myapp//target/docker-demo-0.0.1-SNAPSHOT.jar"]
+
+
+============(Single stage)Avoid cache invalidation========
+
+
+# select image
+FROM maven:3.5-jdk-8
+
+# copy the project files
+COPY ./pom.xml /usr/myapp/pom.xml
+COPY ./settings.xml /usr/myapp/settings.xml
+
+# build all dependencies for offline use
+RUN mvn -s settings.xml dependency:go-offline -B
+
+#copy your other files
+COPY ./src ./src
+
+# build for release
+RUN mvn package
+
+# set the startup command to run your binary
+CMD ["java", "-jar", "/usr/myapp//target/docker-demo-0.0.1-SNAPSHOT.jar"]
+
+
+
+=============Multi stage without cache invalidation==============
+
+
+#Phase 1, Build artifact
+FROM maven as build
+
+COPY ./ /usr/myapp/
+RUN mvn -s settings.xml clean package
+
+#Stage 2, copy artifact
+FROM openjdk:8-jre-alpine
+COPY --from=build /usr/myapp/target/docker-demo-0.0.1-SNAPSHOT.jar /usr/myapp/app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/usr/myapp/app.jar"]
+
+
+
+
+
+================Multi stage optimized===================
+
+#Stage 1, Build artifact
+FROM maven as build
+WORKDIR /usr/myapp
+
+COPY pom.xml /usr/myapp
+COPY settings.xml /usr/myapp
+RUN mvn -s settings.xml dependency:go-offline -B
+
+COPY src /usr/myapp/src
+RUN mvn clean package
+
+
+#Stage 2, copy artifact
+FROM openjdk:8-jre-alpine
+COPY --from=build /usr/myapp/target/docker-demo-0.0.1-SNAPSHOT.jar /usr/myapp/app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/usr/myapp/app.jar"]
+
+
+
+===================Experimental===========================
+
+
+# select image
+FROM maven:3.5-jdk-8
+
+WORKDIR /usr/myapp
+# copy your source tree
+COPY ./ /usr/myapp
+
+# build for release
+#RUN mvn --batch-mode clean  package
+RUN --mount=type=cache,target=/root/.m2  mvn  clean package
+
+
+# set the startup command to run your binary
+ENTRYPOINT ["java","-jar","/usr/myapp//target/docker-demo-0.0.1-SNAPSHOT.jar"]
+
+
+# syntax=docker/dockerfile:experimental
+
+
+#
+##
+##
+###Stage 1, Build artifact
+##FROM maven:3.6.1-jdk-8  as build
+##WORKDIR /usr/myapp
+##
+##COPY pom.xml /usr/myapp
+##COPY settings.xml /usr/myapp
+##COPY src /usr/myapp/src
+##
+##RUN --mount=type=cache,target=/root/.m2 \
+##    mvn -s settings.xml  --batch-mode -f /usr/src/app/pom.xml clean package
+##
+###Stage 2, copy artifact
+##FROM openjdk:8-jre-alpine
+##COPY --from=build /usr/myapp/target/docker-demo-0.0.1-SNAPSHOT.jar /usr/myapp/app.jar
+##EXPOSE 8080
+##ENTRYPOINT ["java", "-jar", "/usr/myapp/app.jar"]
+
+
+
+
+#solution from github issue https://github.com/carlossg/docker-maven/issues/36#issuecomment-334562850
+
+#FROM maven
+#WORKDIR /usr/src/app
+## /root/.m2 is a volume :(
+#ENV MAVEN_OPTS=-Dmaven.repo.local=../m2repo/
+#COPY pom.xml .
+## v2.8 doesn't work :(
+#RUN mvn -B -e -C -T 1C org.apache.maven.plugins:maven-dependency-plugin:3.0.2:go-offline
+#COPY . .
+#RUN mvn -B -e -o -T 1C verify
+#
+#FROM openjdk
+#COPY --from=0 /usr/src/app/target/*.jar ./
+#
+
