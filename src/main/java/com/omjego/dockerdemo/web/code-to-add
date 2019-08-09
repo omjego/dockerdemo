@@ -1,0 +1,24 @@
+//    @Autowired
+//    private Provider<Sample> provider;
+
+    @Autowired
+    RedisTemplate<String, String> redisTemplate;
+
+//    @Autowired
+//    SomeRandomService someRandomService;
+
+//
+//    @GetMapping("/count")
+//    @ResponseBody
+//    public String getCount() {
+//
+////        Sample sample = provider.get();
+////        System.out.println("Previous message: " + sample.message);
+////        sample.message = "Hello There : " + Thread.currentThread().getName();
+////        System.out.println("New Message: " + sample.message);
+////        someRandomService.willTryToAccess();
+//
+//        String key = "count";
+////        return "Visits : " + redisTemplate.opsForValue().increment(key, 1);
+//        return key ;
+//    }

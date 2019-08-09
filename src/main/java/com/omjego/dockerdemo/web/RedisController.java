@@ -1,48 +1,37 @@
 package com.omjego.dockerdemo.web;
 
-import com.omjego.dockerdemo.core.Sample;
-import com.omjego.dockerdemo.core.SomeRandomService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import javax.annotation.Resource;
-import javax.inject.Provider;
+import java.util.Random;
 
 @Controller
 public class RedisController
 {
+    private static final String[] messages = {"random", "dranom", "dramon",
+            "ndarom", "omradn"};
 
-    @Autowired
-    private Provider<Sample> provider;
-
-    @Autowired
-    RedisTemplate<String, String> redisTemplate;
-
-    @Autowired
-    SomeRandomService someRandomService;
-
-
-    @GetMapping("/count")
-    @ResponseBody
-    public String getCount() {
-
-        Sample sample = provider.get();
-        System.out.println("Previous message: " + sample.message);
-        sample.message = "Hello There : " + Thread.currentThread().getName();
-        System.out.println("New Message: " + sample.message);
-        someRandomService.willTryToAccess();
-
-        String key = "count";
-//        return "Visits : " + redisTemplate.opsForValue().increment(key, 1);
-        return key ;
-    }
 
     @GetMapping("/hello")
     @ResponseBody
-    public String defaultMethod() {
-        return  "Hi there";
+    public String defaultMethod()
+    {
+        String name = messages[getStreamOfRandomIntsWithRange(0, messages.length -1 )];
+        return  "<h1>Hi  :" + name + "<h1>";
     }
+
+    public static int getStreamOfRandomIntsWithRange(int min, int max) {
+        Random random = new Random();
+        return random.nextInt(max);
+   }
+
+
+    /**
+     * chosen by fair dice roll, guaranteed to be random.
+     * @return random number
+     */
+   public static int getRandomNumber() {
+        return 3;
+   }
+
 }
